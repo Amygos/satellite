@@ -29,8 +29,7 @@ jobs:
       - name: Check if the branch is main
         id: check_branch
         run: |
-          BRANCH_NAME="${GITHUB_HEAD_BRANCH:-${GITHUB_REF_NAME}}"
-          if [[ "$BRANCH_NAME" == "main" ]]
+          if [[ "${{ github.event.workflow_run.head_branch || github.ref_name }}" == "main" ]]
           then
             echo "is_main=true" >> $GITHUB_OUTPUT
           else
@@ -39,8 +38,7 @@ jobs:
       - name: Check if a Github release is being created
         id: check_release
         run: |
-          BRANCH_NAME="${GITHUB_HEAD_BRANCH:-${GITHUB_REF_NAME}}"
-          if gh release view "$BRANCH_NAME" >& /dev/null
+          if  gh release view ${{ github.event.workflow_run.head_branch || github.ref_name }} >& /dev/null
           then
             echo "is_release=true" >> $GITHUB_OUTPUT
           else
@@ -54,8 +52,7 @@ jobs:
           echo "registry=ghcr.io" >> $GITHUB_OUTPUT
           # Convert repository owner to lowercase
           echo "base_path=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
-          BRANCH_NAME="${GITHUB_HEAD_BRANCH:-${GITHUB_REF_NAME}}"
-          echo "image_tag=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=${{ github.event.workflow_run.head_branch || github.ref_name }}" >> $GITHUB_OUTPUT
   scan_images:
     name: "Scan images"
     needs: build_info
