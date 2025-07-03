@@ -40,6 +40,7 @@ jobs:
         id: check_release
         run: |
           BRANCH_NAME="${GITHUB_HEAD_BRANCH:-${GITHUB_REF_NAME}}"
+          echo $BRANCH_NAME
           if gh release view "$BRANCH_NAME" >& /dev/null
           then
             echo "is_release=true" >> $GITHUB_OUTPUT
